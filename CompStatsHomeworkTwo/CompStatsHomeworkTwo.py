@@ -73,13 +73,6 @@ def do_problem_four_part_a(sample_size: int, num_students_observed: int, p: floa
     return probability
 
 
-n = 20
-observation_count = 12
-prob = 0.7
-
-do_problem_four_part_a(n, observation_count, prob)
-
-
 class Bin:
 
     def __init__(self, min_point, max_point, mid_point):
@@ -154,11 +147,11 @@ def do_problem_four_part_b():
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
 
-    ax1.scatter(x_values, y_values_1, alpha=0.8, c="red", s=10, label=f"X ~ N(1, 1)=")
+    ax1.scatter(x_values, y_values_1, alpha=0.8, c="red", s=10, label=f"X ~ N(1, 1)")
     ax1.scatter(x_values, y_values_2, alpha=0.8, c="green", s=10, label=f"Y ~ N(5, 4)")
-    ax1.scatter(x_values, y_values_3, alpha=0.8, c="blue", s=10, label=f"Z = X+Y, E[Z] = {sample_mean}, Var(Z) = {sample_variance}")
-    ax1.plot([x_sample_mean, x_sample_mean], [0.0, x_max_count], "r--", label="Z mean")
-    ax1.plot([y_sample_mean, y_sample_mean], [0.0, y_max_count], "g--", label="Z mean")
+    ax1.scatter(x_values, y_values_3, alpha=0.8, c="blue", s=10, label=f"Z = X+Y; E[Z] = {sample_mean}, Var(Z) = {sample_variance}")
+    ax1.plot([x_sample_mean, x_sample_mean], [0.0, x_max_count], "r--", label="X mean")
+    ax1.plot([y_sample_mean, y_sample_mean], [0.0, y_max_count], "g--", label="Y mean")
     ax1.plot([sample_mean, sample_mean], [0.0, z_max_count], "b--", label="Z mean")
 
     plt.title("X~N(1,1), Y~N(5, 4), Z = X + Y")
@@ -166,4 +159,12 @@ def do_problem_four_part_b():
     plt.show()
 
 
+# Execute the code to do problem 4 part a.
+n = 20
+observation_count = 12
+prob = 0.7
+
+do_problem_four_part_a(n, observation_count, prob)
+
+# Execute the function above to do part b of problem 4
 do_problem_four_part_b()
