@@ -1,8 +1,11 @@
+"""Computational Statistics Exercise 3
+Author: Ryan Hutchins
+"""
 import matplotlib.pyplot as plt
 import numpy as np
-import os, sys, codecs
+import codecs
 
-from typing import List
+from typing import List, Tuple
 
 
 class SampleGenerator:
@@ -88,19 +91,17 @@ def strip_bom(filename, new_filename):
             f2.write(lines)
 
 
-def read_data(filename):
+def read_data(filename) -> List[float]:
     with open(filename, "r", newline='') as f:
         lines = f.readlines()
         new_lines = []
         for line in lines:
             new_lines.append(int(line.replace("\r\n", "")))
-    print(new_lines)
     return new_lines
 
 
-def get_cumulative_sum(data) -> np.ndarray:
+def get_cumulative_sum(data: List[float]) -> np.ndarray:
     cum_sum_array: np.ndarray = np.zeros(len(data))
-    print(cum_sum_array)
     total = 0
     for i, entry in enumerate(data):
         total += entry
@@ -109,58 +110,90 @@ def get_cumulative_sum(data) -> np.ndarray:
     return cum_sum_array
 
 
-def plot_cumulative_sum(cum_sum):
-    x = np.array([j for j in range(len(cum_sum))])
-    y = cum_sum
+def zip_output_variables_with_predictors(data: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """
 
-    plt.scatter(x, y, c='g', alpha=0.5, label="standard error vs sample size")
-    plt.title('cumulative new infections of COVID-19')
-    plt.xlabel('day number')
-    plt.xticks([10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110])
-    plt.ylabel('total cases diagnosed')
-    plt.legend()
+    """
+    x_vals: np.ndarray = np.array(list(range(len(data))))
+    return x_vals, data
+
+
+def plot_cumulative_sum_and_linear_mle_model(cum_sum):
+    """
+        Plots the cumulative sum of the cases against the day number since the start of the records.
+    """
+    data = zip_output_variables_with_predictors(cum_sum)
+    x = data[0]
+    y = data[1]
+
+    beta_1_hat = compute_beta_1_hat(data=data)
+    beta_0_hat = compute_beta_0_hat(data=data, beta_1_hat=beta_1_hat)
+
+    y2 = beta_0_hat + (beta_1_hat * x)
+
+    residuals_vector = y - y2
+
+    fig, axs = plt.subplots(2)
+
+    axs[0].scatter(x, y, c='g', alpha=0.5, label="cum cases vs day number")
+    axs[0].plot(x, y2, c='r', label="MLE best fit line")
+    axs[0].set(
+        title="cumulative new infections of COVID-19",
+        xlabel="day number",
+        xticks=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
+        ylabel="total cases diagnosed"
+    )
+    axs[0].legend()
+
+    axs[1].scatter(x, residuals_vector, c='k', label="residuals")
+    axs[1].set(
+        title="residual vs day number",
+        xlabel="day number",
+        ylabel="residual value",
+        xticks=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110]
+    )
+    axs[1].legend()
+
     plt.show()
 
 
-def compute_beta_0_mle(data: List[int]) -> float:
-    """Compute beta_1 parameter, which is done exclusively from the data.
+def compute_beta_1_hat(data: Tuple[np.ndarray, np.ndarray]) -> float:
+    """Compute beta_1 parameter, which is done exclusively from the data. For MLE in this case, we have the closed
+    form solution:
+
+        beta_1_hat = c(x,y)/(s_x)^2
 
     Use the closed form solution for the parameter derived in class."""
-    x_vals = np.array(list(range(len(data))))
-    cum_sum_array = get_cumulative_sum(data)
-    x_diff: np.ndarray = x_vals - x_vals.mean()
-    y_diff: np.ndarray = cum_sum_array - cum_sum_array.mean()
-    diff_mult: np.ndarray = x_diff*y_diff
-    cxy = diff_mult.sum()
+    x_vals = data[0]
+    y_vals = data[1]
+    cxy = np.cov(x_vals, y_vals)[0][1]
     sx2 = x_vals.var()
     beta_1 = cxy/sx2
-
     return beta_1
 
 
-def compute_beta_1_mle(data, beta_1: float):
-    pass
+def compute_beta_0_hat(data: Tuple[np.ndarray, np.ndarray], beta_1_hat: float):
+    """
+        Computes the optimal parameter beta_1, which in MLE has the closed-form solution:
 
+            beta_0_hat = y_bar - (beta_1_hat * x_bar)
 
-def compute_std_mle():
-    pass
-
-
-def compute_residuals():
-    pass
-
-
-def compute_maximum_likelihood_estimates():
-    pass
+    """
+    x = data[0]
+    x_bar = x.mean()
+    y = data[1]
+    y_bar = y.mean()
+    beta_0 = y_bar - (beta_1_hat * x_bar)
+    return beta_0
 
 
 def do_problem_two():
-    pass
+    d: List[float] = read_data(
+        "/Users/administrator/PycharmProjects/ComputationalStatistics/CompStatsHomeworkThree/data/covid19data.csv"
+    )
+    cs: np.ndarray = get_cumulative_sum(d)
+    plot_cumulative_sum_and_linear_mle_model(cs)
 
 
-#  do_problem_one(sample_size_range=range(2,51), number_of_samples=1000, parameter=0.2)
-
-d = read_data("/Users/administrator/PycharmProjects/ComputationalStatistics/CompStatsHomeworkThree/data/covid19data.csv")
-print(get_cumulative_sum(d))
-cs = get_cumulative_sum(d)
-plot_cumulative_sum(cs)
+do_problem_one(sample_size_range=range(2,51), number_of_samples=1000, parameter=0.2)
+do_problem_two()
