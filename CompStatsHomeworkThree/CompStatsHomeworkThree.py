@@ -121,6 +121,39 @@ def plot_cumulative_sum(cum_sum):
     plt.legend()
     plt.show()
 
+
+def compute_beta_0_mle(data: List[int]) -> float:
+    """Compute beta_1 parameter, which is done exclusively from the data.
+
+    Use the closed form solution for the parameter derived in class."""
+    x_vals = np.array(list(range(len(data))))
+    cum_sum_array = get_cumulative_sum(data)
+    x_diff: np.ndarray = x_vals - x_vals.mean()
+    y_diff: np.ndarray = cum_sum_array - cum_sum_array.mean()
+    diff_mult: np.ndarray = x_diff*y_diff
+    cxy = diff_mult.sum()
+    sx2 = x_vals.var()
+    beta_1 = cxy/sx2
+
+    return beta_1
+
+
+def compute_beta_1_mle(data, beta_1: float):
+    pass
+
+
+def compute_std_mle():
+    pass
+
+
+def compute_residuals():
+    pass
+
+
+def compute_maximum_likelihood_estimates():
+    pass
+
+
 def do_problem_two():
     pass
 
