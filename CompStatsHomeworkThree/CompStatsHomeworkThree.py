@@ -5,7 +5,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import codecs
 
+from datetime import datetime
+from numpy.random import rand
+from numpy.random import seed
 from typing import List, Tuple
+
+"""CODE FOR PROBLEM 1 STARTS HERE"""
 
 
 class SampleGenerator:
@@ -83,6 +88,9 @@ def do_problem_one(sample_size_range: range, number_of_samples: int, parameter: 
     generator.plot_standard_sample_mean_error_against_n()
 
 
+"""CODE FOR PROBLEM 2 STARTS HERE"""
+
+
 def strip_bom(filename, new_filename):
     with open(filename, "rb") as f:
         lines = f.read()
@@ -111,16 +119,16 @@ def get_cumulative_sum(data: List[float]) -> np.ndarray:
 
 
 def zip_output_variables_with_predictors(data: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    """
-
-    """
     x_vals: np.ndarray = np.array(list(range(len(data))))
     return x_vals, data
 
 
 def plot_cumulative_sum_and_linear_mle_model(cum_sum):
     """
-        Plots the cumulative sum of the cases against the day number since the start of the records.
+        Plot the cumulative sum of the cases against the day number since the start of the records along with the
+        best-fit line according to the MLE.
+
+        Then, in a separate graph, plot the residuals.
     """
     data = zip_output_variables_with_predictors(cum_sum)
     x = data[0]
@@ -194,6 +202,31 @@ def do_problem_two():
     cs: np.ndarray = get_cumulative_sum(d)
     plot_cumulative_sum_and_linear_mle_model(cs)
 
+"""CODE FOR PROBLEM 3 STARTS HERE"""
+def compute_probability(x: float, beta: int=3, theta: int=1) -> np.ndarray:
+    return 1/(1 + np.power(np.e, beta * (theta - x)))
+
+
+def generate_data_set(beta: int=3, theta: int=1, size: int=10000) -> Tuple[np.ndarray, np.ndarray]:
+    xs: np.ndarray = -10 + np.random.rand(size) * 20
+    xs_list: List[float] = xs.tolist()
+    ys = [np.random.binomial(n=1, p=compute_probability(x, beta=beta, theta=theta)) for x in xs_list]
+    return xs, np.array(ys)
+
+
+"""No further time to work on problem set."""
+def fix_beta_and_plot_across_theta():
+    pass
+
+
+def fix_theta_and_plot_across_beta():
+    pass
+
+
+def do_problem_three_part_b():
+    pass
+
 
 do_problem_one(sample_size_range=range(2,51), number_of_samples=1000, parameter=0.2)
 do_problem_two()
+print(generate_data_set(beta=3, theta=1, size=10))
