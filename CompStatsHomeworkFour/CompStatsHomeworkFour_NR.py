@@ -1,4 +1,7 @@
 """
+This file is just used to run code that is sitting in the module CompStatsHomeworkFour, in the file:
+    CompStatsHomeworkFourLib.py
+
 CSDA Homework 4
 University of Heidelberg
 Summer "Semester" 2020 -- wherein we all learned to balk at human contact and embrace distance learning.
