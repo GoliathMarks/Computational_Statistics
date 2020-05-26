@@ -1,0 +1,146 @@
+\documentclass[a4paper,12pt]{article}
+
+%Eingabe deutscher Umlaute
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+
+\usepackage[colorlinks=true,linkcolor=green]{hyperref}
+
+
+%Mathematische Symbole
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}
+\usepackage{amssymb}
+\usepackage{mathdots}
+\usepackage{bbm}
+\usepackage{textgreek}
+\usepackage[linewidth=1pt]{mdframed}
+\usepackage{blindtext}
+
+\usepackage[pdftex]{graphicx}
+
+ %Weniger breite Raender
+ \usepackage{a4wide}
+\usepackage[right = 2cm, top=2cm, bottom=2.5cm,left=2cm]{geometry} 
+
+
+%Normale Papiereinstellungen; Kein Einzug bei neuem Absatz.
+\pagestyle{plain}
+\setlength\parindent{0pt}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%Abkuerzende Befehle%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Erstes Argument {} enthaelt jeweils die Abkuerzung, zweites Argument {} den Latex-Befehl
+
+% Zahlbereiche
+\newcommand{\IN}{\mathbb{N}}
+\newcommand{\IQ}{\mathbb{Q}}
+\newcommand{\IZ}{\mathbb{Z}}
+\newcommand{\IR}{\mathbb{R}}
+\newcommand{\IC}{\mathbb{C}}
+
+%Wahrscheinlichkeit und Erwartungswert
+\newcommand{\IP}{\mathbb{P}}
+\newcommand{\IE}{\mathbb{E}}
+
+%Indikatorfunktion
+\newcommand{\Ii}{\mathbbm{1}}
+
+%Abkuerzungen fuer Sigma-Algebren etc.
+\newcommand{\sP}{\mathcal{P}}
+\newcommand{\sA}{\mathcal{A}}
+\newcommand{\sC}{\mathcal{C}}
+\newcommand{\sX}{\mathcal{X}}
+\newcommand{\sE}{\mathcal{E}}
+\newcommand{\sU}{\mathcal{U}}
+\newcommand{\sN}{\mathcal{N}}
+\newcommand{\sB}{\mathcal{B}_{\IR}}
+
+\newcommand{\seqA}{$(A_{i})_{i\in\IN}\,$}
+\newcommand{\unionA}{$\cup_{i\in\IN}{A_{i}}\,$}
+
+\newcommand{\sig}{\textsigma\,}
+\newcommand{\omeg}{\textOmega\,}
+
+\newcommand\defeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\newcommand\totprobeq{\stackrel{\mathclap{\normalfont\mbox{LoTP}}}{=}}
+\newcommand\propaeq{\stackrel{\mathclap{\normalfont\mbox{(a)}}}{=}}
+\newcommand\propbeq{\stackrel{\mathclap{\normalfont\mbox{(b)}}}{=}}
+
+\newcommand{\expKX}{\IE(e^{kX})}
+\newcommand{\expKY}{\IE(e^{kY})}
+\newcommand{\expX}{\IE(X)}
+\newcommand{\gammaF}{\frac{\lambda^{\alpha}}{\Gamma(\alpha)}}
+\newcommand{\gammaDenom}{\frac{1}{\Gamma(\alpha)}}
+\newcommand{\datFrac}{\left( \frac{1}{\lambda - k} \right)^{\alpha}}
+\newcommand{\datFracL}{\left( \frac{\lambda}{\lambda - k} \right)^{\alpha}}
+\newcommand{\kdermx}{\frac{dM_{X}}{dk}\big|_{k=0}}
+\newcommand{\expint}[1]{\int_{0}^{\infty}{e^{#1 }dx}}
+
+\makeatletter
+\renewcommand*{\eqref}[1]{%
+  \hyperref[{#1}]{\textup{\tagform@{\ref*{#1}}}}%
+}
+\makeatother
+
+%Aufzaehlungen bei enumerate werden (a),(b),(c)
+\renewcommand{\labelenumi}{(\alph{enumi})}
+
+\title{
+	Homework  \\
+	\large Computational Statistics and Data Analysis \\
+	\large Summer Semester, 2020
+	}
+\author{Ryan Hutchins \\ 
+Ruprecht Karls Universit\"at Heidelberg}
+\date{8 Mai, 2020}
+
+\begin{document}
+\maketitle
+\section{Problem 1: Numerical Optimization}
+You may find the code for problem 1 \href{https://github.com/GoliathMarks/Computational_Statistics/tree/master/CompStatsHomeworkFour}{here}.
+\begin{enumerate}
+\item For this part, we implement the gradient descent. We used the closed form of the gradient (a 2-D vector) in our computions. This closed form is:
+\begin{equation}
+\nabla_{\theta}l_{X}(\theta) = \sum_{i=1}^{N}{\left[ \frac{ \exp(-\beta (\theta -x_{i})) } { 1 + \exp(-\beta (\theta -x_{i})) } - y_{i}  \right] \left( \theta - x_{i}, \beta  \right)  }
+\end{equation}
+The estimate that I got for running with minimum change between steps of 0.01 was $\beta = 2.2233, \theta =0.4413$.
+
+
+\item For the Newton-Raphson method, we once again used the closed form of the second partial derivatives in the Hessian matrix. The Hessian matrix in our case is:
+$$
+\begin{bmatrix}
+\frac{\partial^{2}l_{X}(\theta)}{\partial \beta^{2}} & \frac{\partial^{2}l_{X}(\theta)}{\partial \beta \partial \theta} \\
+\frac{\partial^{2}l_{X}(\theta)}{\partial \theta \partial \beta} & \frac{\partial^{2}l_{X}(\theta)}{\partial \theta^{2}} \\
+\end{bmatrix}
+$$
+and the closed forms of the derivatives were, skipping the steps (and there were a good few) of algebra required to get there:
+\begin{equation}
+\frac{\partial^{2}l_{X}(\theta)}{\partial \beta^{2}} = \sum_{i=1}^{N}{  \frac{ -(\theta - x_{i})^{2}  \exp(-\beta (\theta -x_{i}))   }{\left[  1 + \exp(-\beta (\theta -x_{i}))   \right]^{2} }  }
+\end{equation}
+
+\begin{equation}
+\frac{\partial^{2}l_{X}(\theta)}{\partial \theta^{2}} = \sum_{i=1}^{N}{  \frac{  -\beta^{2} \exp(-\beta (\theta -x_{i})) }  {\left[  1 + \exp(-\beta (\theta -x_{i}))   \right]^{2} }  }
+\end{equation}
+
+\begin{equation}
+\frac{\partial^{2}l_{X}(\theta)}{\partial \beta \partial \theta} = \frac{\partial^{2}l_{X}(\theta)}{\partial \theta \partial \beta} = \sum_{i = 1}^{N}{ \frac{  (1-\beta (\theta - x_{i})) \exp(-\beta (\theta -x_{i})) + \exp(-2\beta (\theta -x_{i}))   }    { \left[  1 + \exp(-\beta (\theta -x_{i}))   \right]^{2}  }    }
+\end{equation}
+and in this last case, I am very grateful for the equality of mixed partial derivatives. The Newton-Raphson method returned parameters estimates of $\beta = 3.1*10^-4, theta = -3.8865$. However, the probability that I made a mistake either in my code implementation or my pen-and-paper computation of the derivative is high. 
+
+\end{enumerate}
+
+\section{Problem 2}
+
+
+
+
+
+
+
+\end{document}

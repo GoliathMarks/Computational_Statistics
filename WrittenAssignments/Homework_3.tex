@@ -1,0 +1,164 @@
+\documentclass[a4paper,12pt]{article}
+
+%Eingabe deutscher Umlaute
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+
+\usepackage[colorlinks=true,linkcolor=green]{hyperref}
+
+
+%Mathematische Symbole
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}
+\usepackage{amssymb}
+\usepackage{mathdots}
+\usepackage{bbm}
+\usepackage{textgreek}
+\usepackage[linewidth=1pt]{mdframed}
+\usepackage{blindtext}
+
+\usepackage[pdftex]{graphicx}
+
+ %Weniger breite Raender
+ \usepackage{a4wide}
+\usepackage[right = 2cm, top=2cm, bottom=2.5cm,left=2cm]{geometry} 
+
+
+%Normale Papiereinstellungen; Kein Einzug bei neuem Absatz.
+\pagestyle{plain}
+\setlength\parindent{0pt}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%Abkuerzende Befehle%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Erstes Argument {} enthaelt jeweils die Abkuerzung, zweites Argument {} den Latex-Befehl
+
+% Zahlbereiche
+\newcommand{\IN}{\mathbb{N}}
+\newcommand{\IQ}{\mathbb{Q}}
+\newcommand{\IZ}{\mathbb{Z}}
+\newcommand{\IR}{\mathbb{R}}
+\newcommand{\IC}{\mathbb{C}}
+
+%Wahrscheinlichkeit und Erwartungswert
+\newcommand{\IP}{\mathbb{P}}
+\newcommand{\IE}{\mathbb{E}}
+
+%Indikatorfunktion
+\newcommand{\Ii}{\mathbbm{1}}
+
+%Abkuerzungen fuer Sigma-Algebren etc.
+\newcommand{\sP}{\mathcal{P}}
+\newcommand{\sA}{\mathcal{A}}
+\newcommand{\sC}{\mathcal{C}}
+\newcommand{\sX}{\mathcal{X}}
+\newcommand{\sE}{\mathcal{E}}
+\newcommand{\sU}{\mathcal{U}}
+\newcommand{\sN}{\mathcal{N}}
+\newcommand{\sB}{\mathcal{B}_{\IR}}
+
+\newcommand{\seqA}{$(A_{i})_{i\in\IN}\,$}
+\newcommand{\unionA}{$\cup_{i\in\IN}{A_{i}}\,$}
+
+\newcommand{\sig}{\textsigma\,}
+\newcommand{\omeg}{\textOmega\,}
+
+\newcommand\defeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\newcommand\totprobeq{\stackrel{\mathclap{\normalfont\mbox{LoTP}}}{=}}
+\newcommand\propaeq{\stackrel{\mathclap{\normalfont\mbox{(a)}}}{=}}
+\newcommand\propbeq{\stackrel{\mathclap{\normalfont\mbox{(b)}}}{=}}
+
+\newcommand{\expKX}{\IE(e^{kX})}
+\newcommand{\expKY}{\IE(e^{kY})}
+\newcommand{\expX}{\IE(X)}
+\newcommand{\gammaF}{\frac{\lambda^{\alpha}}{\Gamma(\alpha)}}
+\newcommand{\gammaDenom}{\frac{1}{\Gamma(\alpha)}}
+\newcommand{\datFrac}{\left( \frac{1}{\lambda - k} \right)^{\alpha}}
+\newcommand{\datFracL}{\left( \frac{\lambda}{\lambda - k} \right)^{\alpha}}
+\newcommand{\kdermx}{\frac{dM_{X}}{dk}\big|_{k=0}}
+\newcommand{\expint}[1]{\int_{0}^{\infty}{e^{#1 }dx}}
+
+\makeatletter
+\renewcommand*{\eqref}[1]{%
+  \hyperref[{#1}]{\textup{\tagform@{\ref*{#1}}}}%
+}
+\makeatother
+
+%Aufzaehlungen bei enumerate werden (a),(b),(c)
+\renewcommand{\labelenumi}{(\alph{enumi})}
+
+\title{
+	Homework  \\
+	\large Computational Statistics and Data Analysis \\
+	\large Summer Semester, 2020
+	}
+\author{Ryan Hutchins \\ 
+Ruprecht Karls Universit\"at Heidelberg}
+\date{8 Mai, 2020}
+
+\begin{document}
+\maketitle
+\section{Problem 1}
+You may find the code for problem 1 \href{https://github.com/GoliathMarks/Computational_Statistics/blob/master/CompStatsHomeworkThree/CompStatsHomeworkThree.py}{here}.
+\begin{enumerate}
+\item Nothing required.
+\item It tell us that the standard error of the mean drops off exponentially with N.
+\end{enumerate}
+
+\section{Problem 2}
+You may find the code for problem 2 \href{https://github.com/GoliathMarks/Computational_Statistics/blob/master/CompStatsHomeworkThree/CompStatsHomeworkThree.py}{here}.
+\begin{enumerate}
+\item Nothing required.
+\item I do not believe that we have a good model. It's not as bad as I thought it would be, but it's off by thousands of cases on certain days and only predicts accurately in two places. Interestingly enough, it looks like an S-shaped curve, like a stretched out logistic might be a better model. Good job, German political and health care system. 
+\end{enumerate}
+
+\section{Problem 3}
+Consider a Bernoulli process $y_{i} \in \lbrace 0, 1 \rbrace$ where our probability follows a logistic model:
+\begin{equation}
+p(y_{i}=1|x_{i}) = \frac{1}{1+\exp{\beta(\theta - x_{i})}} \label{eq:1}
+\end{equation}
+In what follows, let's denote the probability in \ref{eq:1} by p.
+\begin{enumerate}
+\item The likelihood function for this is:
+\begin{align*}
+L_{x}(\beta , \theta) &= p(\vec{x}|\theta ) \\
+ &=\prod_{i=1}^{N}{p^{y_{i}}(1-p)^{1-y_{i}}} , \qquad y_{i} \in \lbrace 0, 1 \rbrace
+\end{align*}
+and we can turn this into the log likelihood function, which is more computationally convenient:
+\begin{align*}
+l_{x}(\beta, \theta) &= L_{x}(\beta , \theta) \\
+ &=\log \prod_{i=1}^{N}{p^{y_{i}}(1-p)^{1-y_{i}}} \\
+ &=\sum_{i=1}^{N}\left[ y_{i}\log p + (1-y_{i}) \log (1-p)  \right] \\
+ &=\sum_{i=1}^{N}\left[ y_{i} \log \left( \frac{1}{1+\exp{\beta(\theta - x_{i})}}  \right) + (1-y_{i}) \log\left(1- \frac{1}{1+\exp{\beta(\theta - x_{i})}} \right )  \right]
+\end{align*}
+We could further simplify this and then plug the right-hand side of \eqref{eq:1} in to attempt an analytical solution, but as our goal is to plot this with pyplot, this is good enough. \\
+
+To use logistic regression with least squares we must create a decision rule, $\delta$, defined as follows:
+\begin{equation}
+\delta (x_{i}|\beta, \theta) = 
+\begin{cases}
+1, & p(x) \geq 0.5 \\
+0, & p(x) < 0.5
+\end{cases}
+\end{equation}
+and then the least squares formulation is to find parameters $\theta$ and $\beta$ that minimize the value of:
+\begin{center}
+$ \sum_{i=1}^{N}{\left( y_{i} - \delta(x_{i}|\beta, \theta )  \right)^{2}}$
+\end{center}
+The interesting part about this particular instance of least squares is that the penalty for correctly classifying a point is 0 and the penalty for mis-classifiction is 1. A consequence of this is that we are seeking parameters that simply misclassify the fewest point.
+
+\item I did not finish implementing this. \href{https://github.com/GoliathMarks/Computational_Statistics/blob/master/CompStatsHomeworkThree/CompStatsHomeworkThree.py}{here}
+
+\end{enumerate}
+
+
+
+
+
+
+
+\end{document}

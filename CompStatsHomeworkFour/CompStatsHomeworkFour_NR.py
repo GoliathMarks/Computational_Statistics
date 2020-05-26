@@ -24,13 +24,13 @@ import numpy as np
 fn = "/Users/administrator/PycharmProjects/ComputationalStatistics/CompStatsHomeworkFour/data/ex4task1.csv"
 data = cs4.get_xy_values(filename=fn)
 
-'''gd_parameters = cs4.run_gradient_descent(
+gd_parameters = cs4.run_gradient_descent(
     filename=fn,
     max_iterations=500,
     min_change=0.01,
     initial_parameters=np.array([1, 1]),
     gamma=0.0001
-)'''
+)
 nr_parameters = cs4.run_newton_raphson(
     filename=fn,
     max_iterations=500,
@@ -38,7 +38,7 @@ nr_parameters = cs4.run_newton_raphson(
     initial_parameters=np.array([1, 1])
 )
 
-#print(f"gradient descent estimates: {gd_parameters}")
+print(f"gradient descent estimates: {gd_parameters}")
 print(f"Newton-Raphson estimates: {nr_parameters}")
 
-#cs4.plot_xy_data(data=data, gd_parameters=gd_parameters, nr_parameters=nr_parameters)
+cs4.plot_xy_data(data=data, gd_parameters=gd_parameters, nr_parameters=nr_parameters)
