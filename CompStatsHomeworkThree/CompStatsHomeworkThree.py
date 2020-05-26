@@ -187,13 +187,12 @@ def compute_beta_0_hat(data: Tuple[np.ndarray, np.ndarray], beta_1_hat: float):
     return beta_0
 
 
-def do_problem_two():
-    d: List[float] = read_data(
-        "/Users/administrator/PycharmProjects/ComputationalStatistics/CompStatsHomeworkThree/data/covid19data.csv"
-    )
+def do_problem_two(filename: str):
+    d: List[float] = read_data(filename)
     cs: np.ndarray = get_cumulative_sum(d)
     plot_cumulative_sum_and_linear_mle_model(cs)
 
 
-do_problem_one(sample_size_range=range(2,51), number_of_samples=1000, parameter=0.2)
-do_problem_two()
+do_problem_one(sample_size_range=range(2, 51), number_of_samples=1000, parameter=0.2)
+fn = "/home/ryan/PycharmProjects/ComputationalStatistics/CompStatsHomeworkThree/data/covid19data.csv"
+do_problem_two(fn)
