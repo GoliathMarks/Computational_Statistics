@@ -1,5 +1,5 @@
 """
-This file is just used to run code that is sitting in the module CompStatsHomeworkFour, in the file:
+This file is just used to run code that is sitting in the module CompStatsHomeworkFourLib, in the file:
     CompStatsHomeworkFourLib.py
 
 CSDA Homework 4
@@ -14,15 +14,12 @@ Westley: Oh no. It’s just they’re terribly comfortable. I think everyone wil
 -The Princess Bride
 
 """
-import CompStatsHomeworkFour.CompStatsHomeworkFourLib as cs4
+from HomeworkFour.CompStatsHomeworkFourLib import CompStatsHomeworkFourLib as cs4
 import numpy as np
 
-
-
-
-
-fn = "/Users/administrator/PycharmProjects/ComputationalStatistics/CompStatsHomeworkFour/data/ex4task1.csv"
-data = cs4.get_xy_values(filename=fn)
+#  Code below runs problem 1
+fn = "/home/ryan/PycharmProjects/ComputationalStatistics/HomeworkFour/CompStatsHomeworkFour/data/ex4task1.csv"
+data_one = cs4.get_xy_values(filename=fn)
 
 gd_parameters = cs4.run_gradient_descent(
     filename=fn,
@@ -41,4 +38,16 @@ nr_parameters = cs4.run_newton_raphson(
 print(f"gradient descent estimates: {gd_parameters}")
 print(f"Newton-Raphson estimates: {nr_parameters}")
 
-cs4.plot_xy_data(data=data, gd_parameters=gd_parameters, nr_parameters=nr_parameters)
+cs4.plot_xy_data(data=data_one, gd_parameters=gd_parameters, nr_parameters=nr_parameters)
+#  Code for problem 1 ends here
+
+#  Code below executes problem 2
+
+fn2 = "/home/ryan/PycharmProjects/ComputationalStatistics/HomeworkFour/CompStatsHomeworkFour/data/ex4task2.csv"
+
+data_class = cs4.CountriesData(fn2)
+arr = data_class.data["Germany"].dates
+tau_x = np.where(arr == "09-Mar-2020")[0][0]
+tau_y = np.where(arr == "23-Mar-2020")[0][0]
+data_class.get_estimates_for_country("Germany")
+print(data_class.perform_test_for_country("Germany", tau_x=tau_x, tau_y=tau_y))

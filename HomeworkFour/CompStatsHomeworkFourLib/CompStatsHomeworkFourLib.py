@@ -2,14 +2,27 @@
     Computational Statistics Homework 4
     Author: Ryan Hutchins
     University of Heidelberg, Summer Somester 2020
+
+    Serial Experiments in Social Isolation, day number: 12x, feels like day number: 4574573498
+
+    Evey: Who are you?
+    V: Who? Who is but the form following the function of what, and what I am is a man in a mask.
+    Evey: Well, I can see that.
+    V: Of course you can. I”m not questioning your powers of observation, I”m merely remarking upon the paradox of
+        asking a masked man who he is.
 """
 import matplotlib.pyplot as plt
 import numpy as np
 
+from scipy.special import comb
 from typing import Tuple
 
 
+"""Library functions pertaining to Problem 1, part a begin here."""
+
+
 def get_xy_values(filename: str) -> Tuple[np.ndarray, np.ndarray]:
+    """Read a csv file comprising a set of x and y values"""
     with open(filename) as f:
         lines = f.readlines()
         lines = lines[1:]
@@ -120,6 +133,9 @@ def run_gradient_descent(filename: str, max_iterations: int, min_change: float, 
     return final_estimate
 
 
+"""Library functions pertaining to Problem 1, part b"""
+
+
 def compute_hessian(data: Tuple[np.ndarray, np.ndarray], parameters: np.ndarray) -> np.ndarray:
     """
     Compute the Hessian matrix.
@@ -216,3 +232,91 @@ def run_newton_raphson(filename: str, max_iterations: int, min_change: float, in
             print(f"At max iterations, returning.")
 
     return parameters
+
+
+"""Library functions pertaining to Problem 2 start here."""
+
+
+class CountriesData:
+    """Class to hold data and methods related to infection rate statistics for different countries"""
+    class CountryData:
+        """Class to hold data and methods for infection rate statistics for a specific country."""
+        def __init__(self, day_numbers: np.ndarray, dates: np.ndarray, new_infection_data: np.ndarray):
+            """Class constructor for CountryData"""
+            self.day_numbers = day_numbers
+            self.dates = dates
+            self.new_infection_data = new_infection_data
+            self.infection_rate_estimate: np.ndarray = np.array([])
+
+        def compute_estimates(self):
+            """Estimate the infection rate using the summation formula in problem 2 part a"""
+            rate_estimate_list = []
+            for tau in range(len(self.new_infection_data) - 11):
+                estimate = 0
+                for j in range(7):
+                    estimate += self.new_infection_data[tau + j + 4] / self.new_infection_data[tau + j]
+                rate_estimate_list.append(estimate)
+            rate_estimates = np.array(rate_estimate_list)
+            self.infection_rate_estimate = rate_estimates
+
+    def __init__(self, filename):
+        """Class constructor for CountriesData"""
+        self.data = dict()
+        self.get_infection_data(filename=filename)
+
+    def get_infection_data(self, filename):
+        """Process the infection rate data from the csv file."""
+        with open(filename, "r") as f:
+            lines = f.readlines()
+
+            line: str = lines[0]
+            dates = line.split(",")
+            date_list = [d for d in dates[1:]]
+            day_number_list = [j for j, d in enumerate(dates[1:])]
+            date_data: np.ndarray = np.array(date_list)
+            day_number_data: np.ndarray = np.array(day_number_list)
+
+            for i, line in enumerate(lines[1:]):
+                l = line.strip(",\n")
+                country = l.split(",")[0]
+                data_as_list = l.split(",")[1:]
+                data = np.array([int(s) for s in data_as_list])
+                country_data = self.CountryData(day_numbers=day_number_data, dates=date_data, new_infection_data=data)
+                self.data[country] = country_data
+
+    def get_estimates(self):
+        """Estimate the infection rates for each CountryData object in the data class dictionary."""
+        for k, v in self.data.items():
+            v.compute_estimates()
+
+    def get_estimates_for_country(self, country):
+        """Compute estimates for a specific country by name."""
+        self.data[country].compute_estimates()
+
+    def perform_test_for_country(self, country, tau_x, tau_y):
+        """Execute the sign test exactly as described in problem 2, parts a and b."""
+        country_data = self.data[country]
+        signs = []
+        for j in range(7):
+            diff = country_data.infection_rate_estimate[tau_x + j] - country_data.infection_rate_estimate[tau_y + j]
+            if diff >= 0:
+                signs.append(1)
+            else:
+                signs.append(-1)
+        signs = np.array(signs) + 1
+        test_statistic = int(round((1/2) * signs.sum()))
+        print(f"test_statistic for {country} = {test_statistic}")
+        probability_of_outcome_under_null_hyp = \
+            self.compute_probability_of_test_statistic_or_more_extreme_result_under_null_hypothesis(
+                test_statistic=test_statistic
+            )
+        print(f"probability of outcome = {probability_of_outcome_under_null_hyp}")
+        return probability_of_outcome_under_null_hyp
+
+    def compute_probability_of_test_statistic_or_more_extreme_result_under_null_hypothesis(self, test_statistic):
+        """Compute the probability of the computed test statistic or a more extreme value."""
+        comb_sum = 0
+        for k in range(test_statistic, 7 + 1):
+            comb_sum += comb(7, k=k, exact=True)
+        probability_of_test_statisitc_or_more_extreme = comb_sum * np.power((1/2), 7)
+        return probability_of_test_statisitc_or_more_extreme
