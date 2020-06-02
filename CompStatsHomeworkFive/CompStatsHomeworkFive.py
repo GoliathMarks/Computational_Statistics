@@ -88,9 +88,41 @@ class InfectionRates:
             self.reject_bootstrap_null_hypothesis = False
 
 
+class WeatherData:
+    def __init__(self, filename):
+        self.data = {}
+        self.chi_squared_probability = -1
+        self.initialize_from_file(filename)
+        ones: np.ndarray = np.ones(360)
+        xs: np.ndarray = np.array([k for k, v in self.data.items()])
+        cosines: np.ndarray = np.cos((np.pi * xs) / 6.)
+        self.y = np.array([v for k, v in self.data.items()])
+        self.full_A = np.column_stack((ones, xs, cosines))
+        full_model_output = self.obtain_least_squares_estimates(self.full_A)
+        self.full_beta = full_model_output[0]
+        self.full_residuals_sum = full_model_output[1]
+        self.reduced_A = np.column_stack((ones, cosines))
+        reduced_model_output = self.obtain_least_squares_estimates(self.reduced_A)
+        self.reduced_beta = reduced_model_output[0]
+        self.reduced_residuals_sum = reduced_model_output[1]
+        self.D = -(self.full_residuals_sum - self.reduced_residuals_sum)
 
+    def initialize_from_file(self, filename):
+        with open(filename, "r") as f:
+            lines: List = f.readlines()
+            for line in lines:
+                l: List = line.strip("\n").split(",")
+                month_index = int(l[0])
+                monthly_avg_temp = float(l[1])
+                self.data[month_index] = monthly_avg_temp
 
-date_file = "/home/ryan/PycharmProjects/ComputationalStatistics/CompStatsHomeworkFive/data/ex5task1.csv"
+    def obtain_least_squares_estimates(self, coefficients_matrix: np.ndarray):
+        return np.linalg.lstsq(a=coefficients_matrix, b=self.y)
+
+    def compute_chi_squared_probability(self):
+        interval =
+
+'''date_file = "/home/ryan/PycharmProjects/ComputationalStatistics/CompStatsHomeworkFive/data/ex5task1.csv"
 data: InfectionRates = InfectionRates(filename=date_file)
 
 data.perform_t_test()
@@ -100,4 +132,9 @@ print(data.reject_t_null_hypothesis)
 
 data.perform_bootstrap_test(10)
 data.decide_null_bootstrap_hypothesis(.05)
-print(data.reject_bootstrap_null_hypothesis)
+print(data.reject_bootstrap_null_hypothesis)'''
+
+data_file_2 = "/home/ryan/PycharmProjects/ComputationalStatistics/CompStatsHomeworkFive/data/ex5task2.csv"
+w_data = WeatherData(filename=data_file_2)
+print(w_data.full_beta)
+print(w_data.reduced_beta)
