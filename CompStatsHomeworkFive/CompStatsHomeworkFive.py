@@ -1,7 +1,7 @@
 from HomeworkFour.CompStatsHomeworkFourLib import CompStatsHomeworkFourLib as cs4
 import numpy as np
 
-from scipy.stats import t
+from scipy.stats import t, chi2
 from typing import List, Tuple
 
 
@@ -91,6 +91,7 @@ class InfectionRates:
 class WeatherData:
     def __init__(self, filename):
         self.data = {}
+        self.reject_likelihood_ratio_hypothesis = False
         self.chi_squared_probability = -1
         self.initialize_from_file(filename)
         ones: np.ndarray = np.ones(360)
@@ -105,7 +106,8 @@ class WeatherData:
         reduced_model_output = self.obtain_least_squares_estimates(self.reduced_A)
         self.reduced_beta = reduced_model_output[0]
         self.reduced_residuals_sum = reduced_model_output[1]
-        self.D = -(self.full_residuals_sum - self.reduced_residuals_sum)
+        self.sample_variance = (1/(self.y.size - 1)) * (np.power(self.y - self.y.mean(), 2)).sum()
+        self.D = -(1/self.sample_variance) * (self.full_residuals_sum - self.reduced_residuals_sum)
 
     def initialize_from_file(self, filename):
         with open(filename, "r") as f:
@@ -119,22 +121,30 @@ class WeatherData:
     def obtain_least_squares_estimates(self, coefficients_matrix: np.ndarray):
         return np.linalg.lstsq(a=coefficients_matrix, b=self.y)
 
-    def compute_chi_squared_probability(self):
-        interval =
+    def decide_chi_squared_null_hypothesis(self, alpha):
+        endpoints = chi2.interval(alpha, 2)
+        print(f"endpoints of the 95% chi_squared_interval: {endpoints}, D = {self.D}")
+        if self.D < endpoints[0] or self.D > endpoints[1]:
+            self.reject_likelihood_ratio_hypothesis = True
+        else:
+            self.reject_likelihood_ratio_hypothesis = False
 
-'''date_file = "/home/ryan/PycharmProjects/ComputationalStatistics/CompStatsHomeworkFive/data/ex5task1.csv"
+
+date_file = "/home/ryan/PycharmProjects/ComputationalStatistics/CompStatsHomeworkFive/data/ex5task1.csv"
 data: InfectionRates = InfectionRates(filename=date_file)
 
 data.perform_t_test()
-print(data.t_statistic)
+print(f"t_statistics = {data.t_statistic}")
 data.decide_null_t_hypothesis(0.95)
-print(data.reject_t_null_hypothesis)
+print(f"Reject null hypothesis in t test boolean value: {data.reject_t_null_hypothesis}")
 
-data.perform_bootstrap_test(10)
+data.perform_bootstrap_test(1000)
 data.decide_null_bootstrap_hypothesis(.05)
-print(data.reject_bootstrap_null_hypothesis)'''
+print(f"Reject null hypothesis in bootstrap test boolean value: {data.reject_bootstrap_null_hypothesis}")
 
 data_file_2 = "/home/ryan/PycharmProjects/ComputationalStatistics/CompStatsHomeworkFive/data/ex5task2.csv"
 w_data = WeatherData(filename=data_file_2)
-print(w_data.full_beta)
-print(w_data.reduced_beta)
+print(f"Full beta parameters estimate: {w_data.full_beta}")
+print(f"Reduced beta parameters estimate: {w_data.reduced_beta}")
+w_data.decide_chi_squared_null_hypothesis(0.95)
+print(w_data.reject_likelihood_ratio_hypothesis)

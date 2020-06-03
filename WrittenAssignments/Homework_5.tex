@@ -1,0 +1,157 @@
+\documentclass[a4paper,12pt]{article}
+
+%Eingabe deutscher Umlaute
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+
+\usepackage[colorlinks=true,linkcolor=green]{hyperref}
+
+
+%Mathematische Symbole
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}
+\usepackage{amssymb}
+\usepackage{mathdots}
+\usepackage{bbm}
+\usepackage{textgreek}
+\usepackage[linewidth=1pt]{mdframed}
+\usepackage{blindtext}
+
+\usepackage[pdftex]{graphicx}
+
+ %Weniger breite Raender
+ \usepackage{a4wide}
+\usepackage[right = 2cm, top=2cm, bottom=2.5cm,left=2cm]{geometry} 
+
+
+%Normale Papiereinstellungen; Kein Einzug bei neuem Absatz.
+\pagestyle{plain}
+\setlength\parindent{0pt}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%Abkuerzende Befehle%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Erstes Argument {} enthaelt jeweils die Abkuerzung, zweites Argument {} den Latex-Befehl
+
+% Zahlbereiche
+\newcommand{\IN}{\mathbb{N}}
+\newcommand{\IQ}{\mathbb{Q}}
+\newcommand{\IZ}{\mathbb{Z}}
+\newcommand{\IR}{\mathbb{R}}
+\newcommand{\IC}{\mathbb{C}}
+
+%Wahrscheinlichkeit und Erwartungswert
+\newcommand{\IP}{\mathbb{P}}
+\newcommand{\IE}{\mathbb{E}}
+
+%Indikatorfunktion
+\newcommand{\Ii}{\mathbbm{1}}
+
+%Abkuerzungen fuer Sigma-Algebren etc.
+\newcommand{\sP}{\mathcal{P}}
+\newcommand{\sA}{\mathcal{A}}
+\newcommand{\sC}{\mathcal{C}}
+\newcommand{\sX}{\mathcal{X}}
+\newcommand{\sE}{\mathcal{E}}
+\newcommand{\sU}{\mathcal{U}}
+\newcommand{\sN}{\mathcal{N}}
+\newcommand{\sB}{\mathcal{B}_{\IR}}
+
+\newcommand{\seqA}{$(A_{i})_{i\in\IN}\,$}
+\newcommand{\unionA}{$\cup_{i\in\IN}{A_{i}}\,$}
+
+\newcommand{\sig}{\textsigma\,}
+\newcommand{\omeg}{\textOmega\,}
+
+\newcommand\defeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\newcommand\totprobeq{\stackrel{\mathclap{\normalfont\mbox{LoTP}}}{=}}
+\newcommand\propaeq{\stackrel{\mathclap{\normalfont\mbox{(a)}}}{=}}
+\newcommand\propbeq{\stackrel{\mathclap{\normalfont\mbox{(b)}}}{=}}
+
+\newcommand{\expKX}{\IE(e^{kX})}
+\newcommand{\expKY}{\IE(e^{kY})}
+\newcommand{\expX}{\IE(X)}
+\newcommand{\gammaF}{\frac{\lambda^{\alpha}}{\Gamma(\alpha)}}
+\newcommand{\gammaDenom}{\frac{1}{\Gamma(\alpha)}}
+\newcommand{\datFrac}{\left( \frac{1}{\lambda - k} \right)^{\alpha}}
+\newcommand{\datFracL}{\left( \frac{\lambda}{\lambda - k} \right)^{\alpha}}
+\newcommand{\kdermx}{\frac{dM_{X}}{dk}\big|_{k=0}}
+\newcommand{\expint}[1]{\int_{0}^{\infty}{e^{#1 }dx}}
+
+\makeatletter
+\renewcommand*{\eqref}[1]{%
+  \hyperref[{#1}]{\textup{\tagform@{\ref*{#1}}}}%
+}
+\makeatother
+
+%Aufzaehlungen bei enumerate werden (a),(b),(c)
+\renewcommand{\labelenumi}{(\alph{enumi})}
+
+\title{
+	Homework  \\
+	\large Computational Statistics and Data Analysis \\
+	\large Summer Semester, 2020
+	}
+\author{Ryan Hutchins \\ 
+Ruprecht Karls Universit\"at Heidelberg}
+\date{8 Mai, 2020}
+
+\begin{document}
+\maketitle
+
+You may find the code for this assignment \href{https://github.com/GoliathMarks/Computational_Statistics/tree/master/CompStatsHomeworkFive}{here}.
+
+\section{Problem 1: Numerical Optimization}
+\begin{enumerate}
+\item Appropriate $H_{0}$ and $H_{1}$ for these tests are: $H_{0}: F_{X} = F_{Y}$ and $F_{X} \neq F_{Y}$. The null hypothesis states that the social distancing measures have no effect on the new infection rate of the disease. Based on these test results, it does appear that the social distancing measures make a substantial difference. The numbers that I ran told me to \textbf{reject} the null hypothesis. \\
+
+I compute a t statistics value of: 4.0238208193893055 \\
+The endpoints of the 95\% interval for the null hypothesis were: (-2.1199052992210112, 2.1199052992210112) \\
+
+This led to a rejection of the null hypothesis.
+
+\item The null hypothesis, $H_{0}$ is that social distancing measures have no effect, and therefore that we can expect the distribution before and after the measures were taken to be the same, up to random variation, so $F_{X} = F_{Y}$. My results show that that is false. When I construct the Empirical Distribution Function of $t_{N-1}$, I get that my bootstrap values are outside the 95\% interval for the EDF in all but around 1\% of cases. Thus, $t_{N-1}$ is significantly different from 0, if my $\alpha$ value is 0.05.
+\end{enumerate}
+
+\section{Problem 2: Likelihood Ratio Tests}
+The null hypothesis in this case is that $\beta_{1} = 0$, where $\beta_{1}$ is the linear coefficient in the model:
+\begin{equation}
+y_{i} = \beta_{0} + \beta_{1}\cdot x_{i} + \beta_{2}\cdot \cos\left( \frac{\pi}{6} x_{i} \right) + \epsilon_{i}
+\end{equation}
+where $\epsilon_{i}\sim \sN(0,\sigma^{2})$, iid. 
+\begin{enumerate}
+\item My test results seem to suggest that there is no linear trend in the data.
+\item My estimates for the full and reduced parameter set $\beta$ values are:
+\begin{align*}
+&\beta_{0} = 10.7023703, \beta_{1} = .002823587, \beta_{2} = -7.78643352 &\text{full set} \\
+&\beta_{0} = 11.21202778, \beta_{2} = -7.78360994 & \text{reduced set}
+\end{align*}
+In order to test whether they are significantly different from 0, I need to construct a t-distributed statistic. This means I need a statistic that is the ratio of $z \sim \sN (0,1)$ and $X\sim \chi_{k-1}^{2}$. From script equation (2.7), I know that:
+\begin{equation}
+\hat{\beta} \sim \sN(\vec{\beta}, (X^{T}X)^{-1}\sigma^{2})
+\end{equation}
+so I must get a location-scale transformation on $\hat{\beta}$ to make it standard normal. To do this, I would need:
+\begin{equation}
+\hat{\beta}^{*} = \frac{\hat{\beta} - \vec{\beta}}{(X^{T}X)^{-1/2}\sigma}
+\end{equation}
+where $\vec{\beta}$ is the true mean of $\beta$ the parameters. Given the location-scale transformation applied, we should have $\beta\sim\sN(0,1)$, although I am unclear on how to take the square root of a matrix. Since the sample variance is always $\chi_{N-1}^{2}$ distributed, where N is the number of data records, we could then take the statistic:
+\begin{equation}
+t = \frac{\hat{\beta}^{*}}{\sqrt{S_{N}^{2}/N}}
+\end{equation}
+That should give us a t-distributed statistic. \\
+The null hypothesis would be that the true mean is zero, i.e., that $\vec{\beta} = 0$, so that $\hat{\beta}^{*} = \frac{\hat{\beta}}{\sqrt{S_{N}^{2}/N}}$. This test can also be done for any given component of $\beta$, in which case we reduce the dimensionality of the problem. In our case, we were interested in whether or not $\beta_{1}$ was significantly different from 0, and it does not appear to be. 
+
+\item The model assumes that the noise in the observations is independent, and I do not believe that that is actually satisfied by our weather data. I think the average temperature of the earth in a given month influences that in the next given heat retention by, among other things, water vapor. \\
+I believe that the t distribution has a sample size that is already approaching sufficiency after N = 5, and we have N = 16, so I suppose it does fit the model in that regard. 
+\end{enumerate}
+
+
+
+
+
+
+\end{document}
