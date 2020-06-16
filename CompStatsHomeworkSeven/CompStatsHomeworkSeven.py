@@ -55,22 +55,6 @@ def get_mean_squared_error(data: Tuple[np.ndarray, np.ndarray], predicted_values
     return (1 / squared_errors.size) * sum_squared_errors
 
 
-def do_part_a(filename: str, degree: int):
-    data: Tuple[np.ndarray, np.ndarray, np.ndarray] = get_data(filename=filename)
-    G: np.ndarray = compute_basis_polynomial_matrix(degree=degree, x_values=data[0])
-    beta: np.ndarray = compute_mle(G, data[1])
-    predictions = make_predictions(g=G, beta=beta)
-    mse = get_mean_squared_error(data=data, predicted_values=predictions)
-    print(f"The mean squared error from our 21st-degree polynomial in part a is: {mse}")
-    print(f"Plotting true vs. predicted data")
-    print(data[0])
-    print(data[1])
-    plt.scatter(data[0], data[1], color='black', label="true")
-    plt.plot(data[0], predictions, color="r", label="predicted")
-    plt.legend()
-    plt.show()
-
-
 def capture_data_as_torch_tensors(filename) -> Tuple[Tensor, Tensor]:
     # Create random Tensors to hold inputs and outputs
     with open(filename, "r") as f:
@@ -185,6 +169,22 @@ def execute_neural_network_model(
     return model, loss
 
 
+def do_part_a(filename: str, degree: int):
+    data: Tuple[np.ndarray, np.ndarray, np.ndarray] = get_data(filename=filename)
+    G: np.ndarray = compute_basis_polynomial_matrix(degree=degree, x_values=data[0])
+    beta: np.ndarray = compute_mle(G, data[1])
+    predictions = make_predictions(g=G, beta=beta)
+    mse = get_mean_squared_error(data=data, predicted_values=predictions)
+    print(f"The mean squared error from our 21st-degree polynomial in part a is: {mse}")
+    print(f"Plotting true vs. predicted data")
+    print(data[0])
+    print(data[1])
+    plt.scatter(data[0], data[1], color='black', label="true")
+    plt.plot(data[0], predictions, color="r", label="predicted")
+    plt.legend()
+    plt.show()
+
+
 def do_part_b(filename: str):
     model, loss = execute(
         filename=filename,
@@ -217,7 +217,41 @@ def do_part_c(filename: str):
     plot_results(x=x, y=y, y_predicted=y_predicted_final)
 
 
+def do_part_d(filename: str):
+    model, loss = execute(
+        filename=filename,
+        input_dimension=1,
+        output_dimension=1,
+        hidden_layers=[(7, "relu"), (7, "relu")],
+        loss_fn=torch.nn.MSELoss(reduction='sum'),
+        learning_rate=1e-5
+    )
+
+    x, y = capture_data_as_torch_tensors(filename=filename)
+    y_predicted_final = model(x.float())
+
+    plot_results(x=x, y=y, y_predicted=y_predicted_final)
+
+
+def do_part_e(filename: str):
+    model, loss = execute(
+        filename=filename,
+        input_dimension=1,
+        output_dimension=1,
+        hidden_layers=[(3, "sigmoid"), (3, "sigmoid")],
+        loss_fn=torch.nn.MSELoss(reduction='sum'),
+        learning_rate=1e-5
+    )
+
+    x, y = capture_data_as_torch_tensors(filename=filename)
+    y_predicted_final = model(x.float())
+
+    plot_results(x=x, y=y, y_predicted=y_predicted_final)
+
+
 file = "/home/ryan/PycharmProjects/ComputationalStatistics/CompStatsHomeworkSeven/data/sheet7.csv"
-do_part_a(filename=file, degree=21)
-do_part_b(filename=file)
-do_part_c(filename=file)
+#do_part_a(filename=file, degree=21)
+#do_part_b(filename=file)
+#do_part_c(filename=file)
+do_part_d(filename=file)
+#do_part_e(filename=file)
